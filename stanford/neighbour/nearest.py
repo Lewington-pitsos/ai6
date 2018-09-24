@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List
 import preview as pv
-import distance_metricks as dm
+import distance_metrics as dm
 
 PRED_NO = 100
 
