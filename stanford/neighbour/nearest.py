@@ -2,13 +2,14 @@ import numpy as np
 import preview as pv
 from typing import List
 
+PRED_NO = 100
+
 class Nearest:
     def __init__(self):
         self.train()
 
     def train(self):
         self.labels = pv.load_batch("batches.meta")[b"label_names"]
-        print(self.labels)
         self.data = pv.load_batch("data_batch_1")
         self.example_img = self.data[b"data"][0]
 
@@ -16,10 +17,13 @@ class Nearest:
         self, 
         test_image_data: dict, 
         preview: bool = False
-    ) -> List[int]:
+    ) -> np.ndarray:
         test_images = test_image_data[b"data"]
-        predictions = []
+        predictions = np.zeros(PRED_NO)
         for index, flat_img in enumerate(test_images):
+            if index >= PRED_NO:
+                break
+
             prediction_indices = self.get_similar_image_indices(flat_img)
 
             if preview:
@@ -29,12 +33,8 @@ class Nearest:
                     index
                 )
 
-            predictions.append(self.data[b"labels"][prediction_indices[0]])
-            print(predictions[-1])
-
-            if index > 100:
-                break
-
+            predictions[index] = self.data[b"labels"][prediction_indices[0]]
+            
         return predictions
 
     def get_similar_image_indices(self, test_img: np.ndarray, number: int = 1) -> List[int]:
@@ -42,7 +42,7 @@ class Nearest:
             test_img.ndim != 1 or 
             test_img.shape[0] != self.example_img.shape[0]
         ):
-            return -1
+            return []
         
         distances = np.sum(
             abs(np.subtract(

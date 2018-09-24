@@ -28,7 +28,7 @@ def save_image(directory: str, data_dict: dict, index: int):
 
     imsave(os.path.join(directory, img_name), img)
 
-def setup_preview_dir(test_image_name: str):
+def setup_preview_dir(test_image_name: bytes):
     preview_dir = os.path.join("previews", test_image_name.decode("utf-8"))
     img_dir = os.path.join(preview_dir, "test_image")
     prediction_dir = os.path.join(preview_dir, "predictions")
