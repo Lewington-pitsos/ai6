@@ -1,6 +1,7 @@
 import numpy as np
-import preview as pv
 from typing import List
+import preview as pv
+import distance_metricks as dm
 
 PRED_NO = 100
 
@@ -44,16 +45,10 @@ class Nearest:
         ):
             return []
         
-        distances = np.sum(
-            abs(np.subtract(
-                test_img, 
-                self.data[b"data"], 
-                dtype=np.int16
-            )), 
-            axis=1
-        )
+        distances = dm.l1(test_img, self.data[b"data"])
 
         return np.argpartition(distances, number)[:number]
+
 
     def preview_predictions(
         self,
