@@ -45,9 +45,11 @@ class Nearest:
         ):
             return []
         
-        distances = dm.l1(test_img, self.data[b"data"])
+        # distances = dm.l2(test_img, self.data[b"data"])
 
-        return np.argpartition(distances, number)[:number]
+        # return np.argpartition(distances, number)[:number]
+
+        return [dm.l1v2(test_img, self.data[b"data"])]
 
 
     def preview_predictions(
