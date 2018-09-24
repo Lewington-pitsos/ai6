@@ -7,23 +7,37 @@ class Nearest:
         self.train()
 
     def train(self):
+        self.labels = pv.load_batch("batches.meta")[b"label_names"]
+        print(self.labels)
         self.data = pv.load_batch("data_batch_1")
         self.example_img = self.data[b"data"][0]
 
-    def predict_all(self, test_image_data: dict):
+    def predict_all(
+        self, 
+        test_image_data: dict, 
+        preview: bool = False
+    ) -> List[int]:
         test_images = test_image_data[b"data"]
+        predictions = []
         for index, flat_img in enumerate(test_images):
             prediction_indices = self.get_similar_image_indices(flat_img)
 
-            self.preview_predictions(
-                prediction_indices,
-                test_image_data,
-                index
-            )
-            
+            if preview:
+                self.preview_predictions(
+                    prediction_indices,
+                    test_image_data,
+                    index
+                )
 
+            predictions.append(self.data[b"labels"][prediction_indices[0]])
+            print(predictions[-1])
 
-    def get_similar_image_indices(self, test_img: np.ndarray) -> List[int]:
+            if index > 100:
+                break
+
+        return predictions
+
+    def get_similar_image_indices(self, test_img: np.ndarray, number: int = 1) -> List[int]:
         if (
             test_img.ndim != 1 or 
             test_img.shape[0] != self.example_img.shape[0]
@@ -39,10 +53,7 @@ class Nearest:
             axis=1
         )
 
-        prediction_indices = np.argpartition(distances, 10)[:10]
-        print(prediction_indices)
-
-        return prediction_indices
+        return np.argpartition(distances, number)[:number]
 
     def preview_predictions(
         self,
